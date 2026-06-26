@@ -14,6 +14,7 @@ namespace SIC_And_SICXE
     public partial class Main : Form
     {
         List<Line> line = new List<Line>();
+        List<SampleTableRecord> sampleTable = new List<SampleTableRecord>();
         public Main()
         {
             InitializeComponent();
@@ -112,6 +113,66 @@ namespace SIC_And_SICXE
 
 
                 dataGridView1.Refresh();
+        }
+
+        private void calculateSampleTableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            var filtered = line
+              .Where(a => !string.IsNullOrEmpty(a.Label))
+              .Select(a => (Line) a.Clone())
+              .ToList();
+            filtered.RemoveAt(0);
+            foreach (var item in filtered)
+            {
+                sampleTable.Add(new SampleTableRecord()
+                {
+                    Label = item.Label,
+                    Address = item.Address
+                });
+            }
+            sampleTableGrid.DataSource = sampleTable;
+        }
+
+        private void calcuateObjectCodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var loadInstructionSet = Instruction.GetInstructionSet();
+            foreach (var item in line)
+            {
+               if( loadInstructionSet.ContainsKey(item.Instruction))
+               {
+                  string objectCOde =  GetObjectCode(loadInstructionSet[item.Instruction].OpCode, false, Convert.ToInt32(item.Address, 16));
+
+                    item.ObjectCode = objectCOde;
+
+               }
+               else
+               {
+                    item.ObjectCode = "NO_OBJECT_CODE";
+               }
+            }
+
+            dataGridView1.Refresh();
+        }
+        string GetObjectCode(string opcodeHex, bool indexed, int address)
+        {
+            string[] arrayOfObjectCode = new string[6];
+            int opcode = Convert.ToInt32(opcodeHex, 16);
+            string opcodeStr = opcode.ToString("X2"); // "X2" = 2 hex digits
+            arrayOfObjectCode[0] = opcodeStr[0].ToString();
+            arrayOfObjectCode[1] = opcodeStr[1].ToString();
+
+            arrayOfObjectCode[2] = indexed ? "1" : "0";
+            string addressString = address.ToString("X3");
+            arrayOfObjectCode[3] = addressString[0].ToString();
+            arrayOfObjectCode[4] = addressString[1].ToString();
+            arrayOfObjectCode[5] = addressString[2].ToString();
+
+
+            string hexObjectCode = string.Join("", arrayOfObjectCode);
+
+            return hexObjectCode;
+
         }
     }
 }

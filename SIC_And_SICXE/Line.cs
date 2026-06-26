@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SIC_And_SICXE
 {
-    public class Line
+    public class Line:ICloneable
     {
 
         public string Address { get; set; }
@@ -18,6 +18,17 @@ namespace SIC_And_SICXE
         public string Operand { get; set; }
 
         public string ObjectCode { get; set; }
+
+        public object Clone()
+        {
+            return new Line
+            {
+                Label = Label,
+                Instruction = Instruction,
+                Operand = Operand,
+                Address = Address
+            };
+        }
     }
     public class Header
     {
