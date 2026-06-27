@@ -141,38 +141,37 @@ namespace SIC_And_SICXE
             {
                if( loadInstructionSet.ContainsKey(item.Instruction))
                {
-                  string objectCOde =  GetObjectCode(loadInstructionSet[item.Instruction].OpCode, false, Convert.ToInt32(item.Address, 16));
+                   var selectedItem = sampleTable.FirstOrDefault(a => a.Label == item.Operand);
+                  string objectCOde =  GetObjectCode(loadInstructionSet[item.Instruction].OpCode, false,Convert.ToInt32( selectedItem.Address,16));
 
                     item.ObjectCode = objectCOde;
 
                }
-               else
-               {
+               else if (item.Instruction == "WORD")
+                {
+
+
+                    int address = Convert.ToInt32(item.Operand, 16);
+                    item.ObjectCode = $"{address:X6}";
+
+                }
+                else
+                {
                     item.ObjectCode = "NO_OBJECT_CODE";
-               }
+                }
             }
 
             dataGridView1.Refresh();
         }
-        string GetObjectCode(string opcodeHex, bool indexed, int address)
+        private string GetObjectCode(string opcodeHex, bool indexed, int address)
         {
-            string[] arrayOfObjectCode = new string[6];
+         
             int opcode = Convert.ToInt32(opcodeHex, 16);
-            string opcodeStr = opcode.ToString("X2"); // "X2" = 2 hex digits
-            arrayOfObjectCode[0] = opcodeStr[0].ToString();
-            arrayOfObjectCode[1] = opcodeStr[1].ToString();
-
-            arrayOfObjectCode[2] = indexed ? "1" : "0";
-            string addressString = address.ToString("X3");
-            arrayOfObjectCode[3] = addressString[0].ToString();
-            arrayOfObjectCode[4] = addressString[1].ToString();
-            arrayOfObjectCode[5] = addressString[2].ToString();
-
-
-            string hexObjectCode = string.Join("", arrayOfObjectCode);
-
-            return hexObjectCode;
-
+            if (indexed)
+            {
+                address |= 0x8000;
+            }
+            return $"{opcode:X2}{address:X4}";
         }
     }
 }
