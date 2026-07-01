@@ -206,34 +206,52 @@ namespace SIC_And_SICXE
             string programName = line.FirstOrDefault().Label;
             string startingAddress = line.FirstOrDefault().Operand;
             string programLenght = CalcuateLenght(line).ToString("X6");
-            builder.Append($"H.{programName}.{programLenght}");
+            builder.Append($"H^{programName}^{programLenght}");
 
             int lineCounter = 0;
             var filtered = line
-             .Where(a => !string.IsNullOrEmpty(a.Label))
              .Select(a => (Line)a.Clone())
              .ToList();
             filtered.RemoveAt(0);
 
-            List<HTERecord> hTERecords = new List<HTERecord>();
-            hTERecords.Add(new HTERecord());
+            List<HTERecords> hTERecords = new List<HTERecords>();
+            hTERecords.Add(new HTERecords());
             foreach (var item in filtered)
             {
-                if (lineCounter > 10 || item.ObjectCode == "NO_OBJECT_CODE")
+                if (item.ObjectCode == "NO_OBJECT_CODE")
                 {
-                    hTERecords.Add(new HTERecord());
+                    var lastHte = hTERecords.LastOrDefault();
+                    if (lastHte.ObjectCode.Count != 0)
+                    {
+                        hTERecords.Add(new HTERecords());
+                      
+                    }
+                    lineCounter = 0;
+                }
+                else if(lineCounter > 9)
+                {
+              
+                    hTERecords.Add(new HTERecords());
+                    var lastHte = hTERecords.LastOrDefault();
+                    lastHte.ObjectCode.Add(new HTERecord() { Address = item.Address, ObjectCode = item.ObjectCode });
+                   
+                    lineCounter = 0;
                 }
                 else
                 {
                     var lastHte = hTERecords.LastOrDefault();
-                    lastHte.ObjectCode.Add(Convert.ToInt32( item.ObjectCode,16));
+                    lastHte.ObjectCode.Add(new HTERecord() { Address = item.Address, ObjectCode = item.ObjectCode });
 
                 }
+                lineCounter++;
             }
-            builder.AppendLine("\n");
+          
+            hTERecords.RemoveAll(a=> a.ObjectCode.Count == 0);
+
             foreach (var item in hTERecords)
             {
-                builder.Append(item.ToString());
+                builder.AppendLine("\n");
+                builder.Append(item.ToString()+".");
             }
           
 
@@ -241,27 +259,40 @@ namespace SIC_And_SICXE
             txtHTERecord.Text = builder.ToString();
 
         }
-        public class HTERecord
+        public class HTERecord {
+            public string ObjectCode { get; set; }
+            public string Address { get; set; }
+        }
+        public class HTERecords
         {
-            public List<int> ObjectCode { get; set; } = new List<int>();
+            public List<HTERecord> ObjectCode { get; set; } = new List<HTERecord>();
 
             public int GetLenght()
             {
-                int start = ObjectCode.FirstOrDefault();
-                int last = ObjectCode.LastOrDefault();
+               if(ObjectCode.Count == 0)
+                {
+                    return 0;
+                }
+                 int start = Convert.ToInt32( ObjectCode.FirstOrDefault().Address,16);
+                int last = Convert.ToInt32(ObjectCode.LastOrDefault().Address,16);
                 return last - start;
             }
             public int GetFirst()
             {
-                return ObjectCode.FirstOrDefault();
+                if (ObjectCode.FirstOrDefault() == null)
+                {
+                    return 0;
+                }
+                return Convert.ToInt32( ObjectCode.FirstOrDefault().Address,16);
             }
             public override string ToString()
             {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.Append($"T.{GetFirst()}.{GetLenght().ToString("X2")}");
+                stringBuilder.Append($"T^{GetFirst().ToString("X6")}^{GetLenght().ToString("X2")}");
                 foreach (var item in ObjectCode)
                 {
-                    stringBuilder.Append(item.ToString("X6"));
+
+                    stringBuilder.Append("^"+item.ObjectCode.ToString());
                 }
                 return stringBuilder.ToString();
             }
