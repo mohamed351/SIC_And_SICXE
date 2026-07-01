@@ -26,7 +26,8 @@ namespace SIC_And_SICXE
                 Label = Label,
                 Instruction = Instruction,
                 Operand = Operand,
-                Address = Address
+                Address = Address,
+                ObjectCode = ObjectCode
             };
         }
     }

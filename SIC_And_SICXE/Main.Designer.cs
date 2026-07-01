@@ -40,9 +40,10 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.sampleTableGrid = new System.Windows.Forms.DataGridView();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.txtHTERecord = new System.Windows.Forms.RichTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.calcuateHTERecordsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -59,7 +60,8 @@
             this.fileToolStripMenuItem,
             this.calculateLOCToolStripMenuItem,
             this.calculateSampleTableToolStripMenuItem,
-            this.calcuateObjectCodeToolStripMenuItem});
+            this.calcuateObjectCodeToolStripMenuItem,
+            this.calcuateHTERecordsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(985, 24);
@@ -169,7 +171,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.richTextBox1);
+            this.groupBox2.Controls.Add(this.txtHTERecord);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 219);
             this.groupBox2.Name = "groupBox2";
@@ -178,14 +180,14 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "HTE Record";
             // 
-            // richTextBox1
+            // txtHTERecord
             // 
-            this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBox1.Location = new System.Drawing.Point(3, 16);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(178, 192);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
+            this.txtHTERecord.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtHTERecord.Location = new System.Drawing.Point(3, 16);
+            this.txtHTERecord.Name = "txtHTERecord";
+            this.txtHTERecord.Size = new System.Drawing.Size(178, 192);
+            this.txtHTERecord.TabIndex = 0;
+            this.txtHTERecord.Text = "";
             // 
             // groupBox3
             // 
@@ -206,6 +208,13 @@
             this.richTextBox2.Size = new System.Drawing.Size(777, 76);
             this.richTextBox2.TabIndex = 0;
             this.richTextBox2.Text = "";
+            // 
+            // calcuateHTERecordsToolStripMenuItem
+            // 
+            this.calcuateHTERecordsToolStripMenuItem.Name = "calcuateHTERecordsToolStripMenuItem";
+            this.calcuateHTERecordsToolStripMenuItem.Size = new System.Drawing.Size(135, 20);
+            this.calcuateHTERecordsToolStripMenuItem.Text = "Calcuate HTE Records";
+            this.calcuateHTERecordsToolStripMenuItem.Click += new System.EventHandler(this.calcuateHTERecordsToolStripMenuItem_Click);
             // 
             // Main
             // 
@@ -247,9 +256,10 @@
         private System.Windows.Forms.ToolStripMenuItem calculateSampleTableToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem calcuateObjectCodeToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox txtHTERecord;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.ToolStripMenuItem calcuateHTERecordsToolStripMenuItem;
     }
 }
 

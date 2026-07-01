@@ -88,24 +88,31 @@ namespace SIC_And_SICXE
                     var previousLine = indexedSet[i - 1];
                     if (instructionSet.ContainsKey(previousLine.Instruction))
                     {
-                        currentLine.Address = (Convert.ToInt32(previousLine.Address, 16) + 3).ToString("X2");
+                        currentLine.Address = (Convert.ToInt32(previousLine.Address, 16) + 3).ToString("X4");
                     }
                     else if (previousLine.Instruction == "WORD")
                     {
-                        currentLine.Address = (Convert.ToInt32(previousLine.Address, 16) + 3).ToString("X2");
+                        currentLine.Address = (Convert.ToInt32(previousLine.Address, 16) + 3).ToString("X4");
 
                     }
                     else if (previousLine.Instruction == "RESW")
                     {
                         int opdecimalFormat = Convert.ToInt32(previousLine.Operand) * 3;
-                        int ophexderimalFormat = Convert.ToInt32(opdecimalFormat.ToString("X2"), 16);
+                        int ophexderimalFormat = Convert.ToInt32(opdecimalFormat.ToString("X4"), 16);
                         int finalResult = opdecimalFormat;
 
                         int newAddress = Convert.ToInt32(previousLine.Address, 16) + finalResult;
 
-                        currentLine.Address = newAddress.ToString("X2");
+                        currentLine.Address = newAddress.ToString("X4");
 
                     }
+                    else if(previousLine.Instruction == "RESB")
+                    {
+                        //int opdecimalFormat = Convert.ToInt32(previousLine.Operand) +1;
+                        //int ophexderimalFormat = Convert.ToInt32(opdecimalFormat.ToString("X2"), 16);
+                        //currentLine.Address = newAddress.ToString("X2");
+                    }
+                    
                     
 
                 }
@@ -141,8 +148,17 @@ namespace SIC_And_SICXE
             {
                if( loadInstructionSet.ContainsKey(item.Instruction))
                {
-                   var selectedItem = sampleTable.FirstOrDefault(a => a.Label == item.Operand);
-                  string objectCOde =  GetObjectCode(loadInstructionSet[item.Instruction].OpCode, false,Convert.ToInt32( selectedItem.Address,16));
+                    bool isIndex = false;
+                    string operand = item.Operand;
+                    if (item.Operand.Contains(","))
+                    {
+                        isIndex = true;
+                        operand = operand.Split(',')[0];
+
+                    }
+                    var selectedItem = sampleTable.FirstOrDefault(a => a.Label == operand);
+                   
+                  string objectCOde =  GetObjectCode(loadInstructionSet[item.Instruction].OpCode, isIndex, Convert.ToInt32( selectedItem.Address,16));
 
                     item.ObjectCode = objectCOde;
 
@@ -150,9 +166,11 @@ namespace SIC_And_SICXE
                else if (item.Instruction == "WORD")
                 {
 
+                    string decimalString = item.Operand;
+                    int number = int.Parse(decimalString);
+                    string hex = number.ToString("X6");
 
-                    int address = Convert.ToInt32(item.Operand, 16);
-                    item.ObjectCode = $"{address:X6}";
+                    item.ObjectCode = $"{hex}";
 
                 }
                 else
@@ -165,13 +183,89 @@ namespace SIC_And_SICXE
         }
         private string GetObjectCode(string opcodeHex, bool indexed, int address)
         {
-         
             int opcode = Convert.ToInt32(opcodeHex, 16);
             if (indexed)
             {
                 address |= 0x8000;
             }
-            return $"{opcode:X2}{address:X4}";
+          
+            return $"{opcode:X2}{address.ToString("X4")}";
+        }
+        public int CalcuateLenght(List<Line> lines)
+        {
+            int start = Convert.ToInt32( line.FirstOrDefault().Operand,16);
+            int last = Convert.ToInt32(line.LastOrDefault().Address, 16);
+
+            return last - start;
+        }
+     
+
+        private void calcuateHTERecordsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StringBuilder builder = new StringBuilder();
+            string programName = line.FirstOrDefault().Label;
+            string startingAddress = line.FirstOrDefault().Operand;
+            string programLenght = CalcuateLenght(line).ToString("X6");
+            builder.Append($"H.{programName}.{programLenght}");
+
+            int lineCounter = 0;
+            var filtered = line
+             .Where(a => !string.IsNullOrEmpty(a.Label))
+             .Select(a => (Line)a.Clone())
+             .ToList();
+            filtered.RemoveAt(0);
+
+            List<HTERecord> hTERecords = new List<HTERecord>();
+            hTERecords.Add(new HTERecord());
+            foreach (var item in filtered)
+            {
+                if (lineCounter > 10 || item.ObjectCode == "NO_OBJECT_CODE")
+                {
+                    hTERecords.Add(new HTERecord());
+                }
+                else
+                {
+                    var lastHte = hTERecords.LastOrDefault();
+                    lastHte.ObjectCode.Add(Convert.ToInt32( item.ObjectCode,16));
+
+                }
+            }
+            builder.AppendLine("\n");
+            foreach (var item in hTERecords)
+            {
+                builder.Append(item.ToString());
+            }
+          
+
+
+            txtHTERecord.Text = builder.ToString();
+
+        }
+        public class HTERecord
+        {
+            public List<int> ObjectCode { get; set; } = new List<int>();
+
+            public int GetLenght()
+            {
+                int start = ObjectCode.FirstOrDefault();
+                int last = ObjectCode.LastOrDefault();
+                return last - start;
+            }
+            public int GetFirst()
+            {
+                return ObjectCode.FirstOrDefault();
+            }
+            public override string ToString()
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append($"T.{GetFirst()}.{GetLenght().ToString("X2")}");
+                foreach (var item in ObjectCode)
+                {
+                    stringBuilder.Append(item.ToString("X6"));
+                }
+                return stringBuilder.ToString();
+            }
+
         }
     }
 }
