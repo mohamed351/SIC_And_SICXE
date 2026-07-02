@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,8 +15,9 @@ namespace SIC_And_SICXE
 {
     public partial class Main : Form
     {
-        List<Line> line = new List<Line>();
-        List<SampleTableRecord> sampleTable = new List<SampleTableRecord>();
+        SICComplier SICComplier = new SICComplier();
+       
+
         public Main()
         {
             InitializeComponent();
@@ -26,277 +29,55 @@ namespace SIC_And_SICXE
             {
                if( fileDialog.ShowDialog() == DialogResult.OK)
                {
-                   string[] data =  File.ReadAllLines(fileDialog.FileName);
-                  
-                    foreach (var item in data)
-                    {
-                        
-                        var stringList = item.Split(' ').ToList();
-                      
-                            stringList.RemoveAll(a => string.IsNullOrEmpty(a));
-                            string[] currentLine = stringList.ToArray();
-                        if (currentLine.Length == 3)
-                        {
-                            line.Add(new Line()
-                            {
-                                Address = "",
-                                Label = currentLine[0],
-                                Instruction = currentLine[1],
-                                Operand = currentLine[2],
-                                ObjectCode = ""
-                            });
-                        }
-                        else if(currentLine.Length == 2)
-                        {
-                            line.Add(new Line()
-                            {
-                                Address = "",
-                                Label = "",
-                                Instruction = currentLine[0],
-                                Operand = currentLine[1]
-                            });
-                        }
-                       
-                    }
-                    dataGridView1.DataSource = line;
+                    SICComplier.ReadAllLines(fileDialog.FileName);
+                    dataGridView1.DataSource = SICComplier.Line;
 
                }
 
             }
         }
 
-        private void calculateLOCToolStripMenuItem_Click(object sender, EventArgs e)
+    
+        private void locationCounterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var instructionSet = Instruction.GetInstructionSet();
-            var indexedSet = line.ToList();
-            string lastAddress = "";
+            SICComplier.CalculateLocationCounter();
+            dataGridView1.Refresh();
 
-            for (int i = 0; i < line.Count; i++)
-            {
-                if (i == 0)
-                {
-                    indexedSet[i].Address = indexedSet[i].Operand;
-                }
-                else if (i == 1)
-                {
-             
-                    indexedSet[i].Address = indexedSet[i - 1].Address;
-                }
-                else
-                {
-                    var currentLine = indexedSet[i];
-                    var previousLine = indexedSet[i - 1];
-                    if (instructionSet.ContainsKey(previousLine.Instruction))
-                    {
-                        currentLine.Address = (Convert.ToInt32(previousLine.Address, 16) + 3).ToString("X4");
-                    }
-                    else if (previousLine.Instruction == "WORD")
-                    {
-                        currentLine.Address = (Convert.ToInt32(previousLine.Address, 16) + 3).ToString("X4");
-
-                    }
-                    else if (previousLine.Instruction == "RESW")
-                    {
-                        int opdecimalFormat = Convert.ToInt32(previousLine.Operand) * 3;
-                        int ophexderimalFormat = Convert.ToInt32(opdecimalFormat.ToString("X4"), 16);
-                        int finalResult = opdecimalFormat;
-
-                        int newAddress = Convert.ToInt32(previousLine.Address, 16) + finalResult;
-
-                        currentLine.Address = newAddress.ToString("X4");
-
-                    }
-                    else if(previousLine.Instruction == "RESB")
-                    {
-                        //int opdecimalFormat = Convert.ToInt32(previousLine.Operand) +1;
-                        //int ophexderimalFormat = Convert.ToInt32(opdecimalFormat.ToString("X2"), 16);
-                        //currentLine.Address = newAddress.ToString("X2");
-                    }
-                    
-                    
-
-                }
-            }
-
-
-                dataGridView1.Refresh();
         }
 
-        private void calculateSampleTableToolStripMenuItem_Click(object sender, EventArgs e)
+        private void symbolTableToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            var filtered = line
-              .Where(a => !string.IsNullOrEmpty(a.Label))
-              .Select(a => (Line) a.Clone())
-              .ToList();
-            filtered.RemoveAt(0);
-            foreach (var item in filtered)
-            {
-                sampleTable.Add(new SampleTableRecord()
-                {
-                    Label = item.Label,
-                    Address = item.Address
-                });
-            }
-            sampleTableGrid.DataSource = sampleTable;
+            sampleTableGrid.DataSource = SICComplier.GetSampleTable();
         }
 
-        private void calcuateObjectCodeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void objectCodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var loadInstructionSet = Instruction.GetInstructionSet();
-            foreach (var item in line)
-            {
-               if( loadInstructionSet.ContainsKey(item.Instruction))
-               {
-                    bool isIndex = false;
-                    string operand = item.Operand;
-                    if (item.Operand.Contains(","))
-                    {
-                        isIndex = true;
-                        operand = operand.Split(',')[0];
-
-                    }
-                    var selectedItem = sampleTable.FirstOrDefault(a => a.Label == operand);
-                   
-                  string objectCOde =  GetObjectCode(loadInstructionSet[item.Instruction].OpCode, isIndex, Convert.ToInt32( selectedItem.Address,16));
-
-                    item.ObjectCode = objectCOde;
-
-               }
-               else if (item.Instruction == "WORD")
-                {
-
-                    string decimalString = item.Operand;
-                    int number = int.Parse(decimalString);
-                    string hex = number.ToString("X6");
-
-                    item.ObjectCode = $"{hex}";
-
-                }
-                else
-                {
-                    item.ObjectCode = "NO_OBJECT_CODE";
-                }
-            }
-
+            SICComplier.CalculateObjectCode();
             dataGridView1.Refresh();
         }
-        private string GetObjectCode(string opcodeHex, bool indexed, int address)
+
+        private void hTERecordToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int opcode = Convert.ToInt32(opcodeHex, 16);
-            if (indexed)
-            {
-                address |= 0x8000;
-            }
-          
-            return $"{opcode:X2}{address.ToString("X4")}";
+            txtHTERecord.Text = SICComplier.GetHTERecord();
         }
-        public int CalcuateLenght(List<Line> lines)
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int start = Convert.ToInt32( line.FirstOrDefault().Operand,16);
-            int last = Convert.ToInt32(line.LastOrDefault().Address, 16);
-
-            return last - start;
+            dataGridView1.DataSource = null;
+            SICComplier.Line.Clear();
+            SICComplier.SampleTable.Clear();
+            txtHTERecord.Text = "";
+            dataGridView1.Refresh();
+            sampleTableGrid.Refresh();
         }
-     
 
-        private void calcuateHTERecordsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void executeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StringBuilder builder = new StringBuilder();
-            string programName = line.FirstOrDefault().Label;
-            string startingAddress = line.FirstOrDefault().Operand;
-            string programLenght = CalcuateLenght(line).ToString("X6");
-            builder.Append($"H^{programName}^{programLenght}");
-
-            int lineCounter = 0;
-            var filtered = line
-             .Select(a => (Line)a.Clone())
-             .ToList();
-            filtered.RemoveAt(0);
-
-            List<HTERecords> hTERecords = new List<HTERecords>();
-            hTERecords.Add(new HTERecords());
-            foreach (var item in filtered)
-            {
-                if (item.ObjectCode == "NO_OBJECT_CODE")
-                {
-                    var lastHte = hTERecords.LastOrDefault();
-                    if (lastHte.ObjectCode.Count != 0)
-                    {
-                        hTERecords.Add(new HTERecords());
-                      
-                    }
-                    lineCounter = 0;
-                }
-                else if(lineCounter > 9)
-                {
-              
-                    hTERecords.Add(new HTERecords());
-                    var lastHte = hTERecords.LastOrDefault();
-                    lastHte.ObjectCode.Add(new HTERecord() { Address = item.Address, ObjectCode = item.ObjectCode });
-                   
-                    lineCounter = 0;
-                }
-                else
-                {
-                    var lastHte = hTERecords.LastOrDefault();
-                    lastHte.ObjectCode.Add(new HTERecord() { Address = item.Address, ObjectCode = item.ObjectCode });
-
-                }
-                lineCounter++;
-            }
-          
-            hTERecords.RemoveAll(a=> a.ObjectCode.Count == 0);
-
-            foreach (var item in hTERecords)
-            {
-                builder.AppendLine("\n");
-                builder.Append(item.ToString()+".");
-            }
-          
-
-
-            txtHTERecord.Text = builder.ToString();
-
-        }
-        public class HTERecord {
-            public string ObjectCode { get; set; }
-            public string Address { get; set; }
-        }
-        public class HTERecords
-        {
-            public List<HTERecord> ObjectCode { get; set; } = new List<HTERecord>();
-
-            public int GetLenght()
-            {
-               if(ObjectCode.Count == 0)
-                {
-                    return 0;
-                }
-                 int start = Convert.ToInt32( ObjectCode.FirstOrDefault().Address,16);
-                int last = Convert.ToInt32(ObjectCode.LastOrDefault().Address,16);
-                return last - start;
-            }
-            public int GetFirst()
-            {
-                if (ObjectCode.FirstOrDefault() == null)
-                {
-                    return 0;
-                }
-                return Convert.ToInt32( ObjectCode.FirstOrDefault().Address,16);
-            }
-            public override string ToString()
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.Append($"T^{GetFirst().ToString("X6")}^{GetLenght().ToString("X2")}");
-                foreach (var item in ObjectCode)
-                {
-
-                    stringBuilder.Append("^"+item.ObjectCode.ToString());
-                }
-                return stringBuilder.ToString();
-            }
-
+            SICComplier.CalculateLocationCounter();
+            sampleTableGrid.DataSource = SICComplier.GetSampleTable();
+            SICComplier.CalculateObjectCode();
+            dataGridView1.Refresh();
+            txtHTERecord.Text = SICComplier.GetHTERecord();
         }
     }
 }

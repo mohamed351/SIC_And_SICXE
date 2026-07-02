@@ -52,8 +52,6 @@ namespace SIC_And_SICXE
                 ["LDX"] = new Instruction("LDX", "3/4", "04"),
                 ["LPS"] = new Instruction("LPS", "3/4", "D0"),
                 ["MUL"] = new Instruction("MUL", "3/4", "20"),
-
-                // ---- Added from page 2 & 3 ----
                 ["MULF"] = new Instruction("MULF", "3/4", "60"),
                 ["MULR"] = new Instruction("MULR", "2", "98"),
                 ["NORM"] = new Instruction("NORM", "1", "C8"),

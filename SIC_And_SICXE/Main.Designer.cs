@@ -31,9 +31,6 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.calculateLOCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.calculateSampleTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.calcuateObjectCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -43,7 +40,13 @@
             this.txtHTERecord = new System.Windows.Forms.RichTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
-            this.calcuateHTERecordsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.calculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.locationCounterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.symbolTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.objectCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hTERecordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.executeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -58,10 +61,9 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.calculateLOCToolStripMenuItem,
-            this.calculateSampleTableToolStripMenuItem,
-            this.calcuateObjectCodeToolStripMenuItem,
-            this.calcuateHTERecordsToolStripMenuItem});
+            this.calculatorToolStripMenuItem,
+            this.executeToolStripMenuItem,
+            this.clearToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(985, 24);
@@ -79,30 +81,9 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
-            // 
-            // calculateLOCToolStripMenuItem
-            // 
-            this.calculateLOCToolStripMenuItem.Name = "calculateLOCToolStripMenuItem";
-            this.calculateLOCToolStripMenuItem.Size = new System.Drawing.Size(94, 20);
-            this.calculateLOCToolStripMenuItem.Text = "Calculate LOC";
-            this.calculateLOCToolStripMenuItem.Click += new System.EventHandler(this.calculateLOCToolStripMenuItem_Click);
-            // 
-            // calculateSampleTableToolStripMenuItem
-            // 
-            this.calculateSampleTableToolStripMenuItem.Name = "calculateSampleTableToolStripMenuItem";
-            this.calculateSampleTableToolStripMenuItem.Size = new System.Drawing.Size(148, 20);
-            this.calculateSampleTableToolStripMenuItem.Text = "Calculate Symbole Table";
-            this.calculateSampleTableToolStripMenuItem.Click += new System.EventHandler(this.calculateSampleTableToolStripMenuItem_Click);
-            // 
-            // calcuateObjectCodeToolStripMenuItem
-            // 
-            this.calcuateObjectCodeToolStripMenuItem.Name = "calcuateObjectCodeToolStripMenuItem";
-            this.calcuateObjectCodeToolStripMenuItem.Size = new System.Drawing.Size(131, 20);
-            this.calcuateObjectCodeToolStripMenuItem.Text = "Calcuate ObjectCode";
-            this.calcuateObjectCodeToolStripMenuItem.Click += new System.EventHandler(this.calcuateObjectCodeToolStripMenuItem_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -188,6 +169,7 @@
             this.txtHTERecord.Size = new System.Drawing.Size(178, 192);
             this.txtHTERecord.TabIndex = 0;
             this.txtHTERecord.Text = "";
+            this.txtHTERecord.WordWrap = false;
             // 
             // groupBox3
             // 
@@ -209,12 +191,58 @@
             this.richTextBox2.TabIndex = 0;
             this.richTextBox2.Text = "";
             // 
-            // calcuateHTERecordsToolStripMenuItem
+            // calculatorToolStripMenuItem
             // 
-            this.calcuateHTERecordsToolStripMenuItem.Name = "calcuateHTERecordsToolStripMenuItem";
-            this.calcuateHTERecordsToolStripMenuItem.Size = new System.Drawing.Size(135, 20);
-            this.calcuateHTERecordsToolStripMenuItem.Text = "Calcuate HTE Records";
-            this.calcuateHTERecordsToolStripMenuItem.Click += new System.EventHandler(this.calcuateHTERecordsToolStripMenuItem_Click);
+            this.calculatorToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.locationCounterToolStripMenuItem,
+            this.symbolTableToolStripMenuItem,
+            this.objectCodeToolStripMenuItem,
+            this.hTERecordToolStripMenuItem});
+            this.calculatorToolStripMenuItem.Name = "calculatorToolStripMenuItem";
+            this.calculatorToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
+            this.calculatorToolStripMenuItem.Text = "Calculator";
+            // 
+            // locationCounterToolStripMenuItem
+            // 
+            this.locationCounterToolStripMenuItem.Name = "locationCounterToolStripMenuItem";
+            this.locationCounterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.locationCounterToolStripMenuItem.Text = "Location Counter";
+            this.locationCounterToolStripMenuItem.Click += new System.EventHandler(this.locationCounterToolStripMenuItem_Click);
+            // 
+            // symbolTableToolStripMenuItem
+            // 
+            this.symbolTableToolStripMenuItem.Name = "symbolTableToolStripMenuItem";
+            this.symbolTableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.symbolTableToolStripMenuItem.Text = "Symbol Table";
+            this.symbolTableToolStripMenuItem.Click += new System.EventHandler(this.symbolTableToolStripMenuItem_Click);
+            // 
+            // objectCodeToolStripMenuItem
+            // 
+            this.objectCodeToolStripMenuItem.Name = "objectCodeToolStripMenuItem";
+            this.objectCodeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.objectCodeToolStripMenuItem.Text = "Object Code";
+            this.objectCodeToolStripMenuItem.Click += new System.EventHandler(this.objectCodeToolStripMenuItem_Click);
+            // 
+            // hTERecordToolStripMenuItem
+            // 
+            this.hTERecordToolStripMenuItem.Name = "hTERecordToolStripMenuItem";
+            this.hTERecordToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hTERecordToolStripMenuItem.Text = "HTE Record";
+            this.hTERecordToolStripMenuItem.Click += new System.EventHandler(this.hTERecordToolStripMenuItem_Click);
+            // 
+            // executeToolStripMenuItem
+            // 
+            this.executeToolStripMenuItem.Name = "executeToolStripMenuItem";
+            this.executeToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.executeToolStripMenuItem.Text = "Execute";
+            this.executeToolStripMenuItem.Click += new System.EventHandler(this.executeToolStripMenuItem_Click);
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // Main
             // 
@@ -249,17 +277,20 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.ToolStripMenuItem calculateLOCToolStripMenuItem;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.DataGridView sampleTableGrid;
-        private System.Windows.Forms.ToolStripMenuItem calculateSampleTableToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem calcuateObjectCodeToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RichTextBox txtHTERecord;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.RichTextBox richTextBox2;
-        private System.Windows.Forms.ToolStripMenuItem calcuateHTERecordsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem calculatorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem locationCounterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem symbolTableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem objectCodeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hTERecordToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem executeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
     }
 }
 

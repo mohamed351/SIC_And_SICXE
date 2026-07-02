@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HTERecord.cs" />
+    <Compile Include="HTERecords.cs" />
     <Compile Include="Instruction.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="Main.cs">
@@ -56,6 +58,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleTableRecord.cs" />
+    <Compile Include="SICComplier.cs" />
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
